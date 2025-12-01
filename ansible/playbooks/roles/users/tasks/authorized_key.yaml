@@ -12,7 +12,7 @@
   ansible.builtin.authorized_key:
     user: "{{ item.name }}"
     state: present
-    key: "{{ ssh_key }}"
+    key: "{{ item.ssh_key }}"
   loop: "{{ users }}"
 
 - name: Ensure authorized_keys permissions
