@@ -9,7 +9,7 @@
     content: |
       [DEFAULT]
       # NEVER lock yourself out (VERY IMPORTANT)
-      ignoreip = 127.0.0.1/8 YOUR_PUBLIC_IP
+      #ignoreip = 127.0.0.1/8 YOUR_PUBLIC_IP
 
       # Strong brute-force protection
       bantime  = 24h
