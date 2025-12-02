@@ -1,9 +1,9 @@
 #!/bin/bash
 set -euo pipefail
--
+
 if [ -z "${1:-}" ] || [ -z "${2:-}" ]; then
   echo "❌ ERROR: Missing required arguments"
-  echo "Usage: $0 <GITHUB_TOKEN> <SSL_PASSPHRASE>"
+  echo "Usage: $0 <GITHUB_TOKEN> <ROOT_PASSWORD>"
   exit 1
 fi
 
@@ -12,7 +12,7 @@ ROOT_PASSWORD="$2"
 
 GIT_USER="aimanwhb"
 REPO_NAME="secrets"
-DEST_DIR="/tmp/"
+DEST_DIR="/tmp/secrets"
 
 REPO_URL="https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/${REPO_NAME}.git"
 
@@ -24,7 +24,7 @@ if [ ! -d "$DEST_DIR/.git" ]; then
   git clone "$REPO_URL" "$DEST_DIR"
 else
   echo "🔄 Updating secrets repo..."
-  cd "$DEST_DIR/$REPO_NAME"
+  cd "$DEST_DIR"
   git pull
 fi
 
@@ -41,6 +41,7 @@ if [ ! -d "$DEST_DIR/etc/letsencrypt" ]; then
   exit 1
 fi
 
-mv "$DEST_DIR/etc/letsencrypt" /etc/letsencrypt
+rm -rf /etc/letsencrypt
+mv "$DEST_DIR/etc/letsencrypt" /etc/
 
 echo "✅ SSL restore complete."

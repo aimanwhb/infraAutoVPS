@@ -6,11 +6,14 @@
     owner: root
     group: root
 
-- name: Execute SSL backup (with passphrase from variable)
-  ansible.builtin.shell: |
-    /tmp/restore_ssl.sh "{{ git_token }}" "{{ root_password }}"
+- name: Execute SSL restore safely
+  ansible.builtin.command:
+    cmd:
+      - /tmp/restore_ssl.sh
+      - "{{ git_token }}"
+      - "{{ root_password }}"
   register: backup_result
-  no_log: true 
+  no_log: true
   changed_when: backup_result.rc == 0
 
 - name: Display backup result
