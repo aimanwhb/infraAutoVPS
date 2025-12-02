@@ -7,11 +7,8 @@
     group: root
 
 - name: Execute SSL restore safely
-  ansible.builtin.command:
-    cmd:
-      - /tmp/restore_ssl.sh
-      - "{{ git_token }}"
-      - "{{ root_password }}"
+  ansible.builtin.shell: >
+    /tmp/restore_ssl.sh "{{ git_token }}" "{{ root_password }}"
   register: backup_result
   no_log: true
   changed_when: backup_result.rc == 0

@@ -34,7 +34,7 @@ fi
 echo "🔐 Restoring SSL from encrypted backup..."
 
 gpg --batch --yes --passphrase "$ROOT_PASSWORD" \
-  --decrypt ssl-backup.tar.gz.gpg | tar -xzf - -C "$DEST_DIR"
+  --decrypt "$DEST_DIR/ssl-backup.tar.gz.gpg" | tar -xzf - -C "$DEST_DIR"
 
 if [ ! -d "$DEST_DIR/etc/letsencrypt" ]; then
   echo "❌ ERROR: Decryption succeeded but letsencrypt folder is missing"
