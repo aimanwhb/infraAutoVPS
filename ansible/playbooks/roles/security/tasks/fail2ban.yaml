@@ -7,14 +7,32 @@
 - name: Copy config to the config file
   ansible.builtin.copy:
     content: |
-      [sshd]
-      enabled = true
-      port    = ssh
-      filter  = sshd
-      logpath = /var/log/secure
+      [DEFAULT]
+      # NEVER lock yourself out (VERY IMPORTANT)
+      ignoreip = 127.0.0.1/8 YOUR_PUBLIC_IP
+
+      # Strong brute-force protection
+      bantime  = 24h
+      findtime = 10m
       maxretry = 3
-      bantime  = 600
-      findtime = 600
+
+      # Escalate bans for repeat attackers
+      bantime.increment = true
+      bantime.rndtime   = 1h
+
+      # Rocky Linux firewall + logging backend
+      #banaction = firewallcmd-ipset
+      backend   = systemd
+
+      [sshd]
+      enabled  = true
+      port     = {{ ssh_port }}
+      filter   = sshd
+      logpath  = /var/log/secure
+      maxretry = 3
+      findtime = 10m
+      bantime  = 24h
+      mode     = aggressive
     dest: /etc/fail2ban/jail.d/ssh.local
 
 - name: Restart fail2ban service

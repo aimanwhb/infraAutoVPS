@@ -1,15 +1,32 @@
-# Global defaults
+Port {{ ssh_port | default(22) }}
+Protocol 2
+
 PasswordAuthentication no
 ChallengeResponseAuthentication no
 PubkeyAuthentication yes
+PermitEmptyPasswords no
+PermitRootLogin no
 
-# Root user: key-only
-Match User root
-    PermitRootLogin prohibit-password
-    PasswordAuthentication no
+X11Forwarding no
+AllowAgentForwarding no
+AllowTcpForwarding no
+PermitTunnel no
+
+MaxAuthTries 3
+LoginGraceTime 20
+ClientAliveInterval 300
+ClientAliveCountMax 2
+
+UseDNS no
+Compression no
+TCPKeepAlive no
+PrintMotd no
+PermitUserEnvironment no
+StrictModes yes
+
+AllowUsers {% for user in users %}{{ user.name }} {% endfor %}
 
 {% for user in users %}
-# {{ user.name }} users: key-only for SSH
 Match User {{ user.name }}
     PasswordAuthentication no
 {% endfor %}

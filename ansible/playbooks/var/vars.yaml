@@ -1,6 +1,8 @@
 # started/stopped - Testing: stopped
 firewalld_state: stopped
 
+ssh_port:
+
 users:
   - name: admin
     password: ""
@@ -23,6 +25,5 @@ services:
   - nginx
 
 cockpit:
-  - domain: panel.aikode.cloud
-  - email: aimanwahab28@gmail.com
-
+  - domain: 
+  - email: 
