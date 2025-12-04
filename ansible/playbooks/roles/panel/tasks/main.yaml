@@ -34,18 +34,18 @@
 
 - name: Dry-run Certbot for testing
   ansible.builtin.command: >
-    sudo certbot certonly --nginx -d {{ cockpit.domain }}
+    sudo certbot certonly --nginx -d {{ cockpit_domain }}
     --non-interactive
     --agree-tos
-    --email {{ cockpit.email }}
+    --email {{ email }}
   register: dryrun_result
 
 - name: Generate or reuse real SSL cert
   ansible.builtin.command: >
-    sudo certbot --nginx -d {{ cockpit.domain }}
+    sudo certbot --nginx -d {{ cockpit_domain }}
     --non-interactive
     --agree-tos
-    --email {{ cockpit.email }}
+    --email {{ email }}
   when: dryrun_result.rc == 0
 
 - name: Reload nginx service
