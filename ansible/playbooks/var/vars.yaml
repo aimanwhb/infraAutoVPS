@@ -3,6 +3,9 @@ firewalld_state: stopped
 
 ssh_port:
 
+git_username:
+ssl_backup_repo:
+
 users:
   - name: admin
     password: ""

@@ -28,7 +28,7 @@
       tags: always
       
   roles:
-    # Base system packages and services
+    # Base system update, packages and services
     - role: base
       tags: ['base']
 
@@ -40,7 +40,7 @@
     - role: users
       tags: ['users']
 
-    # Manage SSL
+    # Manage SSL - Restore and Backup
     - role: ssl_management
       tags: ['ssl_management']
 

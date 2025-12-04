@@ -1,19 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-if [ -z "${GIT_TOKEN:-}" ] || [ -z "${ROOT_PASSWORD:-}" ]; then
+if [ -z "${GIT_TOKEN:-}" ] || [ -z "${ROOT_PASSWORD:-}" ] || [ -z "${GIT_USERNAME:-}" ] || [ -z "${GIT_SSL_BACKUP_REPO:-}" ]; then
   echo "❌ ERROR: Missing required environment variables"
   exit 1
 fi
 
-GIT_TOKEN="$1"
-ROOT_PASSWORD="$2"
-
-GIT_USER="aimanwhb"
-REPO_NAME="secrets"
 DEST_DIR="/tmp/secrets"
 
-REPO_URL="https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/${REPO_NAME}.git"
+REPO_URL="https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/${GIT_USERNAME}/${GIT_SSL_BACKUP_REPO}.git"
 
 # =========================
 # CLONE REPO
