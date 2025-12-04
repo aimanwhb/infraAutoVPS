@@ -5,7 +5,28 @@
   gather_facts: true
   vars_files:
     - var/vars.yaml
-    
+
+  pre_tasks:
+    - name: Set variables from environment
+      ansible.builtin.set_fact:
+        ROOT_PASSWORD: "{{ lookup('env', 'ROOT_PASSWORD') }}"
+        GIT_TOKEN: "{{ lookup('env', 'GIT_TOKEN') }}"
+      tags: always
+
+    - name: Validate environment variables
+      ansible.builtin.assert:
+        that:
+          - ROOT_PASSWORD is defined
+          - ROOT_PASSWORD != ""
+          - GIT_TOKEN is defined
+          - GIT_TOKEN != ""
+        fail_msg: |
+          ❌ Missing required environment variables!
+          Export them first:
+            export ROOT_PASSWORD='your_password'
+            export GIT_TOKEN='your_token'
+      tags: always
+      
   roles:
     # Base system packages and services
     - role: base

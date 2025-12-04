@@ -1,18 +1,4 @@
 ---
-- name: Fail if ssl_password is not provided
-  ansible.builtin.assert:
-    that:
-      - root_password is defined
-      - root_password != ""
-    fail_msg: "❌ You must provide root_password via -e, e.g. -e \"root_password='yourpass'\""
-
-- name: Fail if git_token not provided
-  ansible.builtin.assert:
-    that:
-      - git_token is defined
-      - git_token | length > 0
-    fail_msg: "❌ You must provide git_token via -e, e.g. -e \"git_token='yourtoken'\""
-
 - name: Perform a full system update and upgrade
   ansible.builtin.dnf:
     name: "*"

@@ -7,8 +7,9 @@
     group: root
 
 - name: Execute SSL restore safely
-  ansible.builtin.shell: >
-    /tmp/restore_ssl.sh "{{ git_token }}" "{{ root_password }}"
+  ansible.builtin.shell:
+    cmd: |
+      /tmp/restore_ssl.sh '{{ GIT_TOKEN }}' '{{ ROOT_PASSWORD }}'
   register: backup_result
   no_log: true
   changed_when: backup_result.rc == 0
@@ -19,10 +20,10 @@
   when: backup_result.stdout != ""
 
 - name: Backup /etc/letsencrypt
-  ansible.builtin.command: >
+  ansible.builtin.shell: >
     tar -czf - /etc/letsencrypt | 
-    gpg --batch --yes --passphrase "{{ root_password }}" 
+    gpg --batch --yes --passphrase "{{ ROOT_PASSWORD }}" 
     --symmetric --cipher-algo AES256 --output /tmp/ssl-backup.tar.gz.gpg
-  args:
-    executable: /bin/bash
-  tags: backup
+  tags: 
+      - never
+      - backup

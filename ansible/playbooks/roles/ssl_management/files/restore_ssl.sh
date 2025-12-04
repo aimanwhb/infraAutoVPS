@@ -1,9 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-if [ -z "${1:-}" ] || [ -z "${2:-}" ]; then
-  echo "❌ ERROR: Missing required arguments"
-  echo "Usage: $0 <GITHUB_TOKEN> <ROOT_PASSWORD>"
+if [ -z "${GIT_TOKEN:-}" ] || [ -z "${ROOT_PASSWORD:-}" ]; then
+  echo "❌ ERROR: Missing required environment variables"
   exit 1
 fi
 
