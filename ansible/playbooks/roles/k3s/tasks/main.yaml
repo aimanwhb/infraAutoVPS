@@ -1,0 +1,2 @@
+# Include security sub-tasks
+- import_tasks: sinstall_k3s.yaml

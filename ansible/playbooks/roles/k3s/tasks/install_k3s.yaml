@@ -1,0 +1,79 @@
+---
+- name: Load kernel modules
+  ansible.builtin.copy:
+    dest: /etc/modules-load.d/k3s.conf
+    content: |
+      overlay
+      br_netfilter
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Load modules immediately
+  ansible.builtin.shell:
+    cmd: |
+      modprobe overlay
+      modprobe br_netfilter
+
+- name: Configure sysctl for K3s
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/k3s.conf
+    content: |
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables = 1
+      net.ipv4.ip_forward = 1
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Apply sysctl settings
+  ansible.builtin.shell:
+    cmd: sysctl --system
+
+- name: Install K3s
+  ansible.builtin.shell:
+    cmd: |
+      curl -sfL https://get.k3s.io | sh -
+    creates: /usr/local/bin/k3s
+  register: k3s_install
+
+- name: Wait for K3s to be ready
+  ansible.builtin.shell:
+    cmd: |
+      timeout 60 bash -c 'until k3s kubectl get nodes 2>/dev/null; do sleep 2; done'
+  when: k3s_install.changed
+
+- name: Verify K3s installation
+  ansible.builtin.shell:
+    cmd: |
+      k3s kubectl get nodes
+      echo "K3s version: $(k3s --version)"
+  register: k3s_verify
+
+- name: Display K3s status
+  ansible.builtin.debug:
+    msg: "{{ k3s_verify.stdout_lines }}"
+
+- name: Update traefik from loadbalancer to nodeport type
+  ansible.builtin.shell:
+    cmd: |
+      kubectl -n kube-system patch svc traefik \
+      -p '{
+        "spec": {
+          "type": "NodePort",
+          "ports": [
+            {
+              "name": "http",
+              "port": 80,
+              "targetPort": 80,
+              "nodePort": {{ traefik_nodeport }}
+            },
+            {
+              "name": "https",
+              "port": 443,
+              "targetPort": 443,
+              "nodePort": 30443
+            }
+          ]
+        }
+      }'

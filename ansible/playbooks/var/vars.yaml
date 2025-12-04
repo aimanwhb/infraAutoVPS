@@ -2,6 +2,7 @@
 firewalld_state: stopped
 
 ssh_port:
+traefik_nodeport: 30080
 
 email:
 git_username:
