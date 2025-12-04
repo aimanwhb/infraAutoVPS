@@ -54,6 +54,11 @@
   ansible.builtin.debug:
     msg: "{{ k3s_verify.stdout_lines }}"
 
+- name: Wait for traefik to be ready
+  ansible.builtin.shell:
+    cmd: |
+      timeout 60 bash -c 'until k3s kubectl -n kube-system get svc traefik 2>/dev/null; do sleep 2; done'
+
 - name: Update traefik from loadbalancer to nodeport type
   ansible.builtin.shell:
     cmd: |
