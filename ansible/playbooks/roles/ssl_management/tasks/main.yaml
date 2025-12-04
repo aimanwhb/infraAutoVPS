@@ -9,9 +9,12 @@
 - name: Execute SSL restore safely
   ansible.builtin.shell:
     cmd: |
-      export GIT_USERNAME='{{ git_username }}'
-      export GIT_SSL_BACKUP_REPO='{{ ssl_backup_repo }}'
       /tmp/restore_ssl.sh
+  environment:
+    GIT_TOKEN: "{{ GIT_TOKEN }}"
+    ROOT_PASSWORD: "{{ ROOT_PASSWORD }}"
+    GIT_USERNAME: "{{ git_username }}"
+    GIT_SSL_BACKUP_REPO: "{{ ssl_backup_repo }}"
   register: backup_result
   # no_log: true
   changed_when: backup_result.rc == 0
