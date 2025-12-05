@@ -1,29 +1,29 @@
-- name: Copy apply cert script
+- name: Copy restore cert script
   ansible.builtin.copy:
-    src: apply_cert.sh
-    dest: /tmp/apply_cert.sh
+    src: restore_cert.sh
+    dest: /tmp/restore_cert.sh
     mode: '0700'
     owner: root
     group: root
 
-- name: Clone from Github and apply certs
+- name: Clone from Github and restore certs
   ansible.builtin.shell:
     cmd: |
-      /tmp/apply_cert.sh
+      /tmp/restore_cert.sh
   environment:
     GIT_TOKEN: "{{ GIT_TOKEN }}"
     ROOT_PASSWORD: "{{ ROOT_PASSWORD }}"
     GIT_USERNAME: "{{ git_username }}"
     CERT_REPO: "{{ cert_repo }}"
     CERT_FILE: "{{ cert_file }}" 
-  register: apply_result
+  register: restore_result
   # no_log: true
-  changed_when: apply_result.rc == 0
+  changed_when: restore_result.rc == 0
 
-- name: Display apply cert result
+- name: Display restore cert result
   ansible.builtin.debug:
-    msg: "{{ apply_result.stdout }}"
-  when: apply_result.stdout != ""
+    msg: "{{ restore_result.stdout }}"
+  when: restore_result.stdout != ""
 
 - name: Copy backup cert script
   ansible.builtin.copy:
@@ -32,9 +32,8 @@
     mode: '0700'
     owner: root
     group: root
-  tags: 
-    - never
-    - backup
+  when: "'backup' in ansible_run_tags"
+  tags: ['backup']
 
 - name: Backup cert and push to Github
   ansible.builtin.shell:
@@ -47,15 +46,12 @@
     CERT_REPO: "{{ cert_repo }}"
   register: backup_result
   # no_log: true
-  changed_when: backup_result.rc == 0
-  tags: 
-      - never
-      - backup
+  changed_when: backup_result.rc == 0 
+  when: "'backup' in ansible_run_tags"
+  tags: ['backup']
 
 - name: Display backup cert result
   ansible.builtin.debug:
     msg: "{{ backup_result.stdout }}"
-  when: backup_result.stdout != ""
-  tags: 
-      - never
-      - backup
+  when: backup_result.stdout != "" and "'backup' in ansible_run_tags"
+  tags: ['backup']
