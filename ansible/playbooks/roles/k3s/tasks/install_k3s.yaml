@@ -83,7 +83,15 @@
         }
       }'
 
-- name: Ensure .kube directory exists
+- name: Ensure .kube directory exists for root
+  ansible.builtin.file:
+    path: /root/.kube
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Ensure .kube directory exists for other users
   ansible.builtin.file:
     path: "/home/{{ item.name }}/.kube"
     state: directory
@@ -92,7 +100,15 @@
     mode: '0700'
   loop: "{{ users }}"
 
-- name: Copy K3s kubeconfig
+- name: Copy K3s kubeconfig for root
+  ansible.builtin.copy:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: /root/.kube/config
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Copy K3s kubeconfig for other users
   ansible.builtin.copy:
     src: /etc/rancher/k3s/k3s.yaml
     dest: "/home/{{ item.name }}/.kube/config"
@@ -101,7 +117,14 @@
     mode: '0600'
   loop: "{{ users }}"
 
-- name: Ensure KUBECONFIG is set in .bashrc
+- name: Ensure KUBECONFIG is set in root .bashrc
+  ansible.builtin.lineinfile:
+    path: /root/.bashrc
+    line: 'export KUBECONFIG=/root/.kube/config'
+    create: yes
+    state: present
+
+- name: Ensure KUBECONFIG is set in other users .bashrc
   ansible.builtin.lineinfile:
     path: "/home/{{ item.name }}/.bashrc"
     line: 'export KUBECONFIG=/home/{{ item.name }}/.kube/config'
@@ -111,7 +134,10 @@
   become_user: "{{ item.name }}"
   loop: "{{ users }}"
 
-- name: Display nodes to verify setup
+- name: Display nodes to verify setup root
+  ansible.builtin.command: kubectl get nodes --kubeconfig /root/.kube/config
+
+- name: Display nodes to verify setup for other users
   ansible.builtin.command: kubectl get nodes --kubeconfig /home/{{ item.name }}/.kube/config
   loop: "{{ users }}"
 

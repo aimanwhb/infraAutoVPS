@@ -8,14 +8,17 @@ email:
 git_username:
 ssl_backup_repo:
 
-cockpit_domain:
-k3s_domain:
-k8s_dashboard_domain:
-wikijs_domain:
-jenkins_domain:
+cockpit_domain: panel.aikode.cloud
+k8s_dashboard_domain: k8s.aikode.cloud
+wikijs_domain: wiki.aikode.cloud
+jenkins_domain: jenkins.aikode.cloud
 
 users:
-  - name: admin
+  - name: admin1
+    password: ""
+    groups: wheel
+    ssh_key: ""
+  - name: admin2
     password: ""
     groups: wheel
     ssh_key: ""
@@ -30,6 +33,7 @@ packages:
   - certbot
   - python3-certbot-nginx
   - gnupg
+  - helm
 
 services:
   - cockpit.socket

@@ -1,2 +1,3 @@
-# Include security sub-tasks
+# Include k3s sub-tasks
 - import_tasks: install_k3s.yaml
+- import_tasks: install_dashboard.yaml
