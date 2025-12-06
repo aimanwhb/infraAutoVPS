@@ -7,7 +7,7 @@
 - name: Kubectl apply /tmp/k8s_dashboard_config.yaml
   ansible.builtin.shell:
     cmd: |
-      Kubectl apply -f /tmp/k8s_dashboard_config.yaml
+      kubectl apply -f /tmp/k8s_dashboard_config.yaml
 
 - name: Copy k8s_dashboard_nginx template to config file
   ansible.builtin.template:
