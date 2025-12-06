@@ -33,7 +33,7 @@
     owner: root
     group: root
   when: "'backup' in ansible_run_tags"
-  tags: ['backup']
+  tags: ['cert_backup']
 
 - name: Backup cert and push to Github
   ansible.builtin.shell:
@@ -47,11 +47,11 @@
   register: backup_result
   # no_log: true
   changed_when: backup_result.rc == 0 
-  when: "'backup' in ansible_run_tags"
-  tags: ['backup']
+  when: "'cert_backup' in ansible_run_tags"
+  tags: ['cert_backup']
 
 - name: Display backup cert result
   ansible.builtin.debug:
     msg: "{{ backup_result.stdout }}"
-  when: backup_result is defined and backup_result.stdout | default('') != "" and "'backup' in ansible_run_tags"
-  tags: ['backup']
+  when: backup_result is defined and backup_result.stdout | default('') != "" and "'cert_backup' in ansible_run_tags"
+  tags: ['cert_backup']
