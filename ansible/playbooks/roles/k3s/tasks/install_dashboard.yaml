@@ -4,10 +4,15 @@
     src: templates/k8s_dashboard_config.j2
     dest: /tmp/k8s_dashboard_config.yaml
 
-- name: Kubectl apply /tmp/k8s_dashboard_config.yaml
-  ansible.builtin.shell:
-    cmd: |
-      kubectl apply -f /tmp/k8s_dashboard_config.yaml
+- block:
+    - name: Apply k8s dashboard config
+      command: kubectl apply -f /tmp/k8s_dashboard_config.yaml
+  rescue:
+    - name: Delete problematic Deployment
+      command: kubectl delete deploy headlamp -n headlamp
+      ignore_errors: true
+    - name: Re-apply k8s_dashboard_config.yaml after delete
+      command: kubectl apply -f /tmp/k8s_dashboard_config.yaml
 
 - name: Copy k8s_dashboard_nginx template to config file
   ansible.builtin.template:
