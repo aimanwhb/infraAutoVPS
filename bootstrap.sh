@@ -15,6 +15,15 @@ Options:
 
 Tags:
   Any positional arguments are treated as Ansible tags to run specific tasks.
+  Available main tags:-
+    base                - System update, packages and services
+    security            - Security hardening (SSH, firewall, fail2ban)
+    users               - User accounts and SSH keys
+    cert_management     - Manage Cert - Apply and Backup
+    panel               - Web UI cockpit installation
+    k3s                 - K3s and headlamp dashboard installation
+  Optional tags:- 
+    backup_cert         - Backup apps certificates
 
 Examples:
   $0                   Run full playbook
@@ -136,7 +145,8 @@ fi
 ANSIBLE_CMD=(ansible-playbook -i "$MAIN_DIR/ansible/inventory/hosts" "$MAIN_DIR/ansible/playbooks/main.yaml")
 
 if [ -n "$TAGS" ]; then
-    ANSIBLE_CMD+=(--tags "$TAGS")
+    TAGS_CSV=$(echo "$TAGS" | tr ' ' ',')
+    ANSIBLE_CMD+=(--tags "$TAGS_CSV")
 fi
 
 if [ "$DRY_RUN" = true ]; then
