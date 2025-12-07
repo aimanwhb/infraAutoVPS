@@ -1,6 +1,34 @@
 #!/bin/bash
 set -euo pipefail
 
+print_usage() {
+    cat <<EOF
+Usage: $0 [options] [tags]
+
+Options:
+  --check          Run Ansible playbook in dry-run mode (no changes applied)
+  --usage, --help  Show this usage message
+
+Tags:
+  Any positional arguments are treated as Ansible tags to run specific tasks.
+
+Examples:
+  $0                   Run full playbook
+  $0 --check           Dry-run full playbook
+  $0 k3s security      Run only tasks with tags 'k3s' and 'security'
+  $0 --check k3s       Dry-run tasks with tag 'k3s'
+EOF
+    exit 0
+}
+
+install_if_missing() {
+    for pkg in "$@"; do
+        if ! rpm -q "$pkg" &>/dev/null; then
+            sudo dnf install -y "$pkg"
+        fi
+    done
+}
+
 # -------------------------------
 # Check required environment variables
 # -------------------------------
@@ -16,8 +44,6 @@ fi
 
 export ROOT_PASSWORD
 export GIT_TOKEN
-
-sudo dnf install git epel-release ansible -y
 
 GIT_USERNAME="aimanwhb"
 MAIN_REPO="https://github.com/$GIT_USERNAME/myvpsbootstrap.git"
@@ -36,6 +62,9 @@ for arg in "$@"; do
         --check)
             DRY_RUN=true
             ;;
+        --help|--usage)
+            print_usage
+            ;;
         *)
             POSITIONAL+=("$arg")
             ;;
@@ -44,6 +73,8 @@ done
 
 # Tags are remaining positional arguments
 TAGS="${POSITIONAL[*]}"
+
+install_if_missing git epel-release ansible
 
 # -------------------------------
 # Clone or update main repo
@@ -74,12 +105,13 @@ fi
 # ------------------------------------------
 # Update vars.yaml file from secrets repo
 # ------------------------------------------
-cp -f "$SECRET_DIR"/vars.yaml  "$MAIN_DIR"/ansible/playboks/var/vars.yaml
+cp -f "$SECRET_DIR"/vars.yaml  "$MAIN_DIR"/ansible/playbooks/var/vars.yaml
 if [ "$?" -eq 0 ]; then 
     echo "Successfully updated vars.yaml"
 else
     echo "Error updating vars.yaml"
     exit 1
+fi
 
 # -------------------------------
 # Tags info
