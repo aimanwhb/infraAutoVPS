@@ -23,7 +23,7 @@ Tags:
     panel               - Web UI cockpit installation
     k3s                 - K3s and headlamp dashboard installation
   Optional tags:- 
-    backup_cert         - Backup apps certificates
+    cert_backup         - Backup apps certificates
 
 Examples:
   $0                   Run full playbook
@@ -41,28 +41,6 @@ install_if_missing() {
         fi
     done
 }
-
-# -------------------------------
-# Check required environment variables
-# -------------------------------
-if [ -z "${ROOT_PASSWORD:-}" ]; then
-    echo "ERROR: ROOT_PASSWORD is not set. Exiting."
-    exit 1
-fi
-
-if [ -z "${GIT_TOKEN:-}" ]; then
-    echo "ERROR: GIT_TOKEN is not set. Exiting."
-    exit 1
-fi
-
-export ROOT_PASSWORD
-export GIT_TOKEN
-
-GIT_USERNAME="aimanwhb"
-MAIN_REPO="https://github.com/$GIT_USERNAME/myvpsbootstrap.git"
-MAIN_DIR="myvpsbootstrap"
-SECRET_REPO="https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/${GIT_USERNAME}/secrets.git"
-SECRET_DIR="secrets"
 
 # -------------------------------
 # Parse options
@@ -86,6 +64,29 @@ done
 
 # Tags are remaining positional arguments
 TAGS="${POSITIONAL[*]}"
+
+# -------------------------------
+# Check required environment variables
+# -------------------------------
+if [ -z "${ROOT_PASSWORD:-}" ]; then
+    echo "ERROR: ROOT_PASSWORD is not set. Exiting."
+    exit 1
+fi
+
+if [ -z "${GIT_TOKEN:-}" ]; then
+    echo "ERROR: GIT_TOKEN is not set. Exiting."
+    exit 1
+fi
+
+export ROOT_PASSWORD
+export GIT_TOKEN
+
+GIT_USERNAME="aimanwhb"
+MAIN_REPO="https://github.com/$GIT_USERNAME/myvpsbootstrap.git"
+MAIN_DIR="myvpsbootstrap"
+SECRET_REPO="https://${GIT_USERNAME}:${GIT_TOKEN}@github.com/${GIT_USERNAME}/secrets.git"
+SECRET_DIR="secrets"
+
 
 install_if_missing git epel-release ansible
 
